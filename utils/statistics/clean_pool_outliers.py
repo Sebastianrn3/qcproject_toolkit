@@ -39,9 +39,10 @@ def physical_mask_by_gradient_norm(grads, max_force_threshold=50.0):
     return np.isfinite(force_norms) & (force_norms < max_force_threshold)
 
 
-def rescue_points_by_small_jumps(energies, mask, min_keep=10, max_jump=0.01, verbose=False):
+def rescue_points_by_small_jumps(energies, mask, min_keep=10, max_jump=1e-3, verbose=False):
     n_kept = int(np.sum(mask))
 
+    # Срабатывает только если осталось меньше 10 точек
     if n_kept >= min_keep:
         return mask
 
@@ -58,7 +59,8 @@ def rescue_points_by_small_jumps(energies, mask, min_keep=10, max_jump=0.01, ver
 
     jumps = np.asarray(jumps)
 
-    valid = (jumps > 0.0) & (jumps < max_jump)
+    # Ограничиваем максимальный скачок до 1e-3 включительно
+    valid = (jumps > 0.0) & (jumps <= max_jump)
     valid_idx = rejected_idx[valid]
     valid_jumps = jumps[valid]
 
@@ -81,7 +83,7 @@ def clean_trajectory(
     max_force=50.0,
     uphill_schedule=DEFAULT_UPHILL_SCHEDULE,
     rescue_min_keep=10,
-    rescue_max_jump=0.01,
+    rescue_max_jump=1e-3,
     verbose=False,
 ):
     geoms = np.asarray(data["geoms"])
@@ -173,7 +175,7 @@ def regenerate_npz_without_outliers(
     verbose=True,
     max_force=50.0,
     rescue_min_keep=10,
-    rescue_max_jump=0.01,
+    rescue_max_jump=1e-3,
 ):
     src_folder = Path(src_folder)
     dst_folder = Path(dst_folder)
@@ -215,5 +217,5 @@ def regenerate_raw_npz_to_clean(name, cfg, verbose=True):
         verbose=verbose,
         max_force=getattr(cfg, "max_force_threshold", 50.0),
         rescue_min_keep=getattr(cfg, "clean_rescue_min_keep", 10),
-        rescue_max_jump=getattr(cfg, "clean_rescue_max_jump", 0.01),
+        rescue_max_jump=getattr(cfg, "clean_rescue_max_jump", 1e-3),
     )

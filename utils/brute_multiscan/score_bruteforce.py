@@ -6,7 +6,7 @@ from numba import njit, prange
 
 
 @njit
-def even_score_nb(chain, coef, window, eps=1e-12):
+def even_score_nb(chain, coef, window):
     m = chain.shape[0] - 1
     seg = np.empty(m)
     total = 0.0
@@ -15,24 +15,39 @@ def even_score_nb(chain, coef, window, eps=1e-12):
         seg[i] = np.linalg.norm(chain[i + 1] - chain[i])
         total += seg[i]
 
-    if total < eps:
-        return 0.0
-
     acc = penalty = 0.0
-    scale = m / window
 
     for i in range(m - 1):
         acc += seg[i]
-        d = (acc / total - (i + 1) / m) * scale
+        d = (acc / total - (i + 1) / m) *  m / window
         penalty += d * d
 
     return coef * penalty
 
 
 @njit
+def dispersion_penalty_nb(chain, lambda_coef=0.2):
+    m = chain.shape[0] - 1
+    seg = np.empty(m)
+    total = 0.0
+
+    for i in range(m):
+        d = np.linalg.norm(chain[i + 1] - chain[i])
+        seg[i] = d
+        total += d
+
+    L_id = total / m
+    penalty = 0.0
+
+    for i in range(m):
+        d_ratio = L_id / seg[i] - 1.0
+        penalty += d_ratio * d_ratio
+
+    return lambda_coef * penalty
+
+@njit
 def bead_cos_nb(x_prev, x_next, grad, eps=1e-4):
-    s = 0.0
-    n = 0
+    s = n = 0
 
     for a in range(x_prev.shape[0]):
         t = x_next[a] - x_prev[a]
@@ -72,7 +87,8 @@ def compute_scores_nb(X, G, variants, r_idx, p_idx, coef, window):
             logs[v, t - 1, 0] = c
             logs[v, t - 1, 1] = n
 
-        p_even = even_score_nb(chain, coef, window)
+        # p_even = even_score_nb(chain, coef, window)
+        p_even = dispersion_penalty_nb(chain)
 
         scores[v, 0] = cos_sum - p_even
         scores[v, 1] = cos_sum
@@ -118,6 +134,7 @@ def brute_force_trajectories(groups, coef, window, top_n=50):
     t0 = time.time()
     scores, logs = compute_scores_nb(X, G, variants, r_idx, p_idx, coef, window)
     print(f"Computation done in {time.time() - t0:.2f}s")
+    print_score_extremes(scores, variants, r_idx, p_idx)
 
     best = np.argsort(scores[:, 0])[::-1][:min(top_n, len(scores))]
 
@@ -150,7 +167,7 @@ def brute_force_trajectories(groups, coef, window, top_n=50):
 
         out.append(item)
 
-        report_ranks = {1, 2, 5, 25, 100, 300}
+        report_ranks = {1, 5,1000}
 
         if rank in report_ranks:
             print(
@@ -164,3 +181,67 @@ def brute_force_trajectories(groups, coef, window, top_n=50):
             )
 
     return out
+
+def print_score_extremes(scores, variants, r_idx, p_idx):
+    """
+    scores[:, 0] = total = cos - penalty
+    scores[:, 1] = cos
+    scores[:, 2] = penalty
+
+    Для total и cos лучший = максимум.
+    Для penalty лучший = минимум.
+    'Средний' = медианный вариант по сортировке этой метрики,
+    то есть реальная цепочка со своими total/cos/penalty.
+    """
+
+    def full_combo(i):
+        inner = tuple(map(int, variants[i]))
+        return inner, (int(r_idx), *inner, int(p_idx))
+
+    def print_block(title, col, maximize=True):
+        order = np.argsort(scores[:, col])
+
+        if maximize:
+            order = order[::-1]
+
+        picks = [
+            ("best", order[0]),
+            ("middle", order[len(order) // 2]),
+            ("worst", order[-1]),
+        ]
+
+        print(f"\n{title}:")
+
+        for name, i in picks:
+            inner, full = full_combo(i)
+
+            print(
+                f"  {name:<6} | "
+                f"total = {scores[i, 0]: .6f} | "
+                f"cos = {scores[i, 1]: .6f} | "
+                f"penalty = {scores[i, 2]: .6f}"
+            )
+            print(f"         inner combo = {inner}")
+            print(f"         full combo  = {full}")
+
+    print("\n" + "=" * 70)
+    print("GLOBAL SCORE SUMMARY")
+    print("=" * 70)
+
+    print_block(
+        title="By total score, higher is better",
+        col=0,
+        maximize=True,
+    )
+
+    print_block(
+        title="By summed cos score, higher is better",
+        col=1,
+        maximize=True,
+    )
+
+    print_block(
+        title="By penalty, lower is better",
+        col=2,
+        maximize=False,
+    )

@@ -40,7 +40,7 @@ BASE_HASH_KEYS = [
     "zoom_radius_laps",
     "brute_top_n",
     "even_window",
-    "even_coeficient",
+    "even_coefficient",
     "even_coefficient",
     "degenerate_extra_zoom",
     "degenerate_zero_fraction",
@@ -48,7 +48,7 @@ BASE_HASH_KEYS = [
 
     "quality_max_step_cv",
     "retry_even_window",
-    "retry_even_coeficient",
+    "retry_even_coefficient",
     "retry_even_coefficient",
     "retry_degenerate_extra_zoom",
 
@@ -122,7 +122,7 @@ METHOD_SPECIFIC_BASE_KEYS = [
     "zoom_radius_laps",
     "brute_top_n",
     "even_window",
-    "even_coeficient",
+    "even_coefficient",
     "even_coefficient",
     "degenerate_extra_zoom",
     "degenerate_zero_fraction",

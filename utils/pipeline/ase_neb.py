@@ -269,6 +269,7 @@ def run_ase_neb(
     run_name,
     method="improvedtangent",
     optimizer="FIRE",
+    climb=False,
 ):
     t0 = time.time()
     output_dir = Path(output_dir)
@@ -317,6 +318,7 @@ def run_ase_neb(
         ase_images,
         k=float(k),
         method=method,
+        climb=climb,
         allow_shared_calculator=False,
     )
 

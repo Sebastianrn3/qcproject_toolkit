@@ -17,7 +17,7 @@ def _relax_chain(atoms, geom_set, cfg, fixed, rigid_groups, npz_sub, xyz_name, o
     total, res_energies, all_fixed = len(geom_set), [], list(range(len(atoms)))
 
     for i, geom in enumerate(geom_set):
-        print(f"Relaxing image {i + 1}/{total-2}")
+        print(f"Relaxing image {i + 1}/{total}")
         is_end = (i == 0 or i == total - 1)
         nr = "0R" if i == 0 else (f"{total - 1}P" if is_end else f"{i}of{total - 2}")
 

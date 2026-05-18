@@ -10,15 +10,15 @@ from utils.helpers.metadata import config_hash
 def normalize_even_coefficient(state: dict[str, Any]) -> float:
     if "even_coefficient" in state:
         coef = state["even_coefficient"]
-    elif "even_coeficient" in state:
-        coef = state["even_coeficient"]
+    elif "even_coefficient" in state:
+        coef = state["even_coefficient"]
     else:
         coef = 1.0
 
     coef = float(coef)
 
     state["even_coefficient"] = coef
-    state["even_coeficient"] = coef
+    state["even_coefficient"] = coef
 
     return coef
 

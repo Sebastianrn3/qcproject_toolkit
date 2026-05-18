@@ -146,7 +146,7 @@ def lap_param(values: Sequence[Any], lap: int) -> Any:
 
 
 def get_even_coef(state: Dict[str, Any]) -> float:
-    return float(state.get("even_coefficient", state.get("even_coeficient", 1.0)))
+    return float(state.get("even_coefficient", state.get("even_coefficient", 1.0)))
 
 
 def get_method_param(
