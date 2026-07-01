@@ -1,31 +1,28 @@
-# qcproject_toolkit
+# ⚛️ qcproject_toolkit
 
-`qcproject_toolkit` is a Python-based experimental framework designed to automate transition state (TS) search workflows in chemical and biochemical systems. 
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-This toolkit implements an algorithmic approach to **combinatorial selection of relaxation paths**, developed as part of the research thesis: *"Transition State Search in Chemical and Biochemical Reactions via Combinatorial Selection of Relaxation Paths"*.
+**Automated Minimum Energy Path (MEP) Search & Transition State Optimization**
 
-## Core Functionality
-The framework automates the interaction between computational chemistry software (e.g., MOPAC) and custom optimization algorithms to identify Minimum Energy Paths (MEP).
+`qcproject_toolkit` is a high-performance Python library designed to automate the search for reaction pathways and transition states (TS) in both small-molecule chemical catalysis and complex enzymatic QM/MM systems. 
 
-- **Automated Workflow**: Orchestrates the interaction between Python scripts and external quantum chemistry calculation engines.
-- **Path Optimization**: Implements combinatorial selection to refine relaxation paths, reducing manual intervention in TS search.
-- **Data Pipelines**: Streamlines the parsing, storage, and analysis of large datasets generated during the reaction modeling process.
-- **Extensible Architecture**: Designed to allow integration of different quantum chemistry packages.
+Bridging the gap between computationally cheap semi-empirical prototyping and highly accurate DFT/ab-initio refinements, this toolkit allows researchers to rapidly build, optimize, and analyze multidimensional Potential Energy Surfaces (PES).
 
-## Prerequisites
-The toolkit requires a Python 3.x environment and access to the relevant quantum chemistry software (e.g., MOPAC) installed on your system.
+## 🚀 Key Features
 
-- **Python Libraries**: `numpy`, `scipy`, `pandas`
-- **Dependencies**: Ensure the path to your calculation engine (e.g., `mopac.exe` or equivalent) is correctly configured in `config.py`.
+* **Automated Initial Path Generation:** Utilizes interpolation methods (e.g., IDPP) to generate chemically sensible initial pathways, avoiding unphysical atomic clashes before optimization starts.
+* **Advanced Chain-of-States Optimization:** Implements robust Nudged Elastic Band (NEB) algorithms alongside specialized variations:
+  * **Zoom-NEB (Z-NEB):** Focuses computational effort on the active site.
+  * **Energy-weighted springs (NEB-TS):** Improves resolution near the transition state.
+* **Enzyme & QM/MM Ready:** Specifically engineered to handle the "spectator degrees of freedom" (spectator DOF) problem commonly encountered when dealing with bulk solvent and massive protein environments.
+* **Performance & Stability:** Designed to seamlessly integrate with local TS search algorithms (like eigenvector-following or dimer methods) after the initial MEP is obtained.
 
-## Installation
+## 📦 Installation
+
+Clone the repository and install the dependencies directly via pip:
 
 ```bash
-# Clone the repository
 git clone [https://github.com/Sebastianrn3/qcproject_toolkit.git](https://github.com/Sebastianrn3/qcproject_toolkit.git)
-
-# Navigate to the directory
 cd qcproject_toolkit
-
-# Install dependencies
-pip install -r requirements.txt
+pip install .
