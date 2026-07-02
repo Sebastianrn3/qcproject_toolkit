@@ -87,15 +87,15 @@ A "Job" represents a specific molecular model assigned with:
 * **Pool Sampling:** $N$ representative images are sampled from each trajectory to define a Groups matrix with the endpoints.
 * **Combinatorial Selection:** Evaluates every possible image chain (unique combination from the Groups matrix).
 * **Zooming Refinement:** Additional cycles of detailed resampling for trajectory points closest to the current best combination.
-* **Brute-force Chain Scoring:** Returns the criterion $S_{total}$ of the proposed path. This combines a physically justified **Cosine Score** (measuring affinity to the MEP, derived from the mathematical definition that gradient and tangent vectors must be collinear) and a **Spatial Distribution Penalty** (controlled by a $\lambda$ multiplier, preferring chains with even geometric distribution).
+* **Brute-force Chain Scoring:** Returns the criterion $S_{total}$ of the proposed path. This combines a physically justified **Cosine Score** (measuring affinity to the MEP, derived from the mathematical definition that gradient and tangent vectors must be collinear) and a **Spatial Distribution Penalty** (controlled by a lambda multiplier, preferring chains with even geometric distribution).
 * **High-Performance Computing:** Because combinatorial complexity scales exponentially $O(K^{N-2})$, the scoring engine uses Just-In-Time (JIT) compilation to C code via Numba and parallel processing across multiple CPU cores.
 
 ### Guesses NEB Examination
 For each job, the MEP search evaluates 7 starting chains by default:
 * 1x Standard (IDPP) guess
-* 3x "Wave 1" protocol guesses (using $\lambda$ penalties of 0.2, 0.5, and 1.0)
-* 3x "Wave 2" protocol guesses (using the same $\lambda$ variants)
-*(Note: Smaller $\lambda$ values lead to bolder/riskier guesses. Wave 2 carries double the preparation cost relative to Wave 1).*
+* 3x "Wave 1" protocol guesses (using lambda penalties of 0.2, 0.5, and 1.0)
+* 3x "Wave 2" protocol guesses (using the same lambda variants)
+*(Note: Smaller lambda values lead to bolder/riskier guesses. Wave 2 carries double the preparation cost relative to Wave 1).*
 
 ---
 
